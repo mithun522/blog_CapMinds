@@ -6,7 +6,7 @@ import axios from 'axios';
 import { BiPencil, BiTrash } from 'react-icons/bi';
 import defaultImage from '../assets/default_image.png';
 import DeleteModal from '../components/DeleteModal';
-import { API_URL } from '../constants/ApiConstants';
+import { API_URL, SERVER_URL } from '../constants/ApiConstants';
 
 const BlogListPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -95,7 +95,7 @@ const BlogListPage: React.FC = () => {
             >
               <div className="h-48 w-full overflow-hidden">
                 <img
-                  src={`http://localhost/backend/${blog.image_url}`}
+                  src={`${SERVER_URL}/${blog.image_url}`}
                   alt={blog.title}
                   className="w-full h-full object-cover"
                   onError={(e) => {

@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
 import { setBlogs } from "../redux/blogSlice";
 import axios from "axios";
+import { API_URL } from "../constants/ApiConstants";
 
 interface DeleteModalProps {
   isModalOpen: boolean;
@@ -17,7 +18,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({ isModalOpen, blogToDelete, bl
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`http://localhost/backend/api.php?id=${id}`);
+      await axios.delete(`${API_URL}?id=${id}`);
       dispatch(setBlogs(blogs.filter((blog: any) => blog.id !== id)));
       toast.success('Blog deleted successfully');
       closeModal();

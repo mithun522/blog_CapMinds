@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import defaultImage from '../assets/default_image.png';
+import { API_URL, SERVER_URL } from '../constants/ApiConstants';
 
 const BlogDetailPage = () => {
   const dispatch = useDispatch();
@@ -14,7 +15,7 @@ const BlogDetailPage = () => {
 
   useEffect(() => {
     const fetchBlog = async () => {
-      const response = await fetch(`http://localhost/backend/api.php?id=${id}`);
+      const response = await fetch(`${API_URL}?id=${id}`);
       const data = await response.json();
       dispatch(setCurrentBlog(data));
     };
@@ -47,7 +48,7 @@ const BlogDetailPage = () => {
       {/* Blog Image */}
       <div className="h-80 w-full overflow-hidden">
           <img
-            src={`http://localhost/backend/${currentBlog.image_url}`}
+            src={`${SERVER_URL}/${currentBlog.image_url}`}
             alt={currentBlog.title}
             className="w-full h-full object-cover"
             onError={(e) => {

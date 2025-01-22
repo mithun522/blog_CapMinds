@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { API_URL } from "../constants/ApiConstants";
+import { API_URL, SERVER_URL } from "../constants/ApiConstants";
 
 const EditBlogPage: React.FC = () => {
   const { id } = useParams();
@@ -133,7 +133,7 @@ const EditBlogPage: React.FC = () => {
           <div className="flex flex-col items-center">
             {blog.image_url && !imageBase64 && (
               <img
-                src={`http://localhost/backend/${blog.image_url}`}
+                src={`${SERVER_URL}/${blog.image_url}`}
                 alt="Current Blog"
                 className="w-32 h-32 object-cover mb-4"
               />
