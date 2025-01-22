@@ -6,6 +6,7 @@ import axios from 'axios';
 import { BiPencil, BiTrash } from 'react-icons/bi';
 import defaultImage from '../assets/default_image.png';
 import DeleteModal from '../components/DeleteModal';
+import { API_URL } from '../constants/ApiConstants';
 
 const BlogListPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -22,7 +23,7 @@ const BlogListPage: React.FC = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       axios
-        .get('http://localhost/backend/api.php')
+        .get(API_URL)
         .then((response) => {
           dispatch(setBlogs(response.data));
         })

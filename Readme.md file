@@ -16,3 +16,14 @@ CREATE TABLE blogs (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 ```
+
+## Backend setup
+Go to the htdocs folder in xampp
+put the backend folder inside the htdocs.
+
+## Frontend setup
+```
+cd frontend
+npm install
+npm run dev
+```

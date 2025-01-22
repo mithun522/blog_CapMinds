@@ -4,6 +4,7 @@ import { addBlog } from '../redux/blogSlice'
 import InputField from '../components/Input'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import { API_URL } from '../constants/ApiConstants'
 
 const AddBlogPage = () => {
   const dispatch = useDispatch()
@@ -57,7 +58,7 @@ const AddBlogPage = () => {
     formData.append('content', content)
     formData.append('image', image)
 
-    axios.post('http://localhost/backend/api.php', formData)
+    axios.post(API_URL, formData)
       .then((response) => {
         dispatch(addBlog(response.data))
         setTitle('')

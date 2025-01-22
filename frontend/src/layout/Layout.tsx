@@ -4,11 +4,11 @@ const Navbar = () => {
   return (
     <nav className="bg-gray-800 text-white p-4">
       <div className="container mx-auto flex justify-between">
-        <Link to="/blogs" className="font-bold text-xl">
+        <Link to="/" className="font-bold text-xl">
           Blog App
         </Link>
         <div className="space-x-4">
-          <Link to="/blogs" className="hover:underline">
+          <Link to="/" className="hover:underline">
             Blogs
           </Link>
           <Link to="/add-blog" className="hover:underline">

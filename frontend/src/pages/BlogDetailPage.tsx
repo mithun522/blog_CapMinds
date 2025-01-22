@@ -45,7 +45,7 @@ const BlogDetailPage = () => {
       </div>
 
       {/* Blog Image */}
-      <div className="h-48 w-full overflow-hidden">
+      <div className="h-80 w-full overflow-hidden">
           <img
             src={`http://localhost/backend/${currentBlog.image_url}`}
             alt={currentBlog.title}
