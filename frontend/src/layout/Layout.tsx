@@ -7,14 +7,6 @@ const Navbar = () => {
         <Link to="/" className="font-bold text-xl">
           Blog App
         </Link>
-        <div className="space-x-4">
-          <Link to="/" className="hover:underline">
-            Blogs
-          </Link>
-          <Link to="/add-blog" className="hover:underline">
-            Add Blog
-          </Link>
-        </div>
       </div>
     </nav>
   );

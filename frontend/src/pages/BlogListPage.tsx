@@ -20,6 +20,9 @@ const BlogListPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [blogToDelete, setBlogToDelete] = useState<number | null>(null);
 
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('');
+
   useEffect(() => {
     const fetchBlogs = async () => {
       axios
@@ -56,12 +59,36 @@ const BlogListPage: React.FC = () => {
     ? blogs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
     : [];
 
+  // Filter blogs by title or author based on search query
+  const filteredBlogs = currentBlogs.filter(
+    (blog) =>
+      blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      blog.author.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <h1 className="text-4xl font-bold text-center text-gray-900 mb-8">Insights and Articles</h1>
+      <div className="relative flex justify-between mb-8">
+        <h1 className="text-4xl font-bold text-center text-gray-900">Insights and Articles</h1>
+        <input
+          id="search"
+          className="w-1/3 px-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          type="text"
+          placeholder="Search by title or author"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <button
+          className="bg-gray-900 hover:ease-in-out hover:scale-105 duration-300 text-white font-bold py-2 px-10 rounded"
+          onClick={() => navigate('/add-blog')}
+        >
+          Create
+        </button>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {currentBlogs.length > 0 ? (
-          currentBlogs.map((blog: any) => (
+        {filteredBlogs.length > 0 ? (
+          filteredBlogs.map((blog: any) => (
             <div
               key={blog.id}
               className="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col"
@@ -72,7 +99,7 @@ const BlogListPage: React.FC = () => {
                   alt={blog.title}
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    e.target.src = defaultImage;  // If the image fails to load, fall back to the default image
+                    e.target.src = defaultImage; // If the image fails to load, fall back to the default image
                   }}
                 />
               </div>
