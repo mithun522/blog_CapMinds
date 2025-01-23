@@ -1,11 +1,13 @@
+# Setup instructions
+
+download xampp
+1. start xampp <br>
+2. start mysql <br>
+3. start apache <br>
+4. open xampp/phpmyadmin
+
 
 ## Run the following commands to create the database and table
-download xampp
-start xampp
-start mysql
-start apache
-open xampp/phpmyadmin
-
 ```
 CREATE DATABASE blog_app;
 
