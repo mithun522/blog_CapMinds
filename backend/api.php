@@ -95,66 +95,76 @@ switch ($method) {
         $putData = fopen("php://input", "r");
         $rawData = stream_get_contents($putData);
         fclose($putData);
-
+    
         // Decode JSON payload
         $data = json_decode($rawData, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Exception("Invalid JSON payload: " . json_last_error_msg());
         }
-
-        // Extract and sanitize input fields
+    
         $title = mysqli_real_escape_string($con, isset($data['title']) ? $data['title'] : '');
         $author = mysqli_real_escape_string($con, isset($data['author']) ? $data['author'] : '');
         $content = mysqli_real_escape_string($con, isset($data['content']) ? $data['content'] : '');
         $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-
-        // Validate required fields
+    
         if ($id <= 0 || !$title || !$author || !$content) {
             throw new Exception("Missing required fields or invalid ID");
         }
-
-        // Handle file uploads (if included in raw data)
+    
+        // Check if a new image is provided
         $imagePath = null;
         if (isset($data['image'])) {
-            // Decode base64 image data
+            // Fetch the existing blog entry to get the old image path
+            $query = "SELECT image_url FROM blogs WHERE id = $id";
+            $result = mysqli_query($con, $query);
+            
+            if ($result && mysqli_num_rows($result) > 0) {
+                $blog = mysqli_fetch_assoc($result);
+                $oldImagePath = $blog['image_url'];
+            } else {
+                throw new Exception("Blog not found");
+            }
+    
+            // Decode and save the new image
             $base64Image = $data['image'];
             $imageData = base64_decode($base64Image);
             if ($imageData === false) {
                 throw new Exception("Invalid image data");
             }
-
-            // Define the upload folder
+    
             $uploadDir = __DIR__ . '/uploads/';
             if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true)) {
                 throw new Exception("Failed to create uploads directory");
             }
-
-            // Generate unique filename
+    
             $timestamp = time();
-            $imageName = $timestamp . '.png'; // Assuming PNG format
+            $imageName = $timestamp . '.png';
             $uploadPath = $uploadDir . $imageName;
-
-            // Save the decoded image data to the file
+    
             if (file_put_contents($uploadPath, $imageData) === false) {
                 throw new Exception("Failed to save image file");
             }
-
-            $imagePath = 'uploads/' . $imageName; // Relative path for database
+    
+            $imagePath = 'uploads/' . $imageName;
+    
+            // Remove the old image if it exists
+            if (file_exists($oldImagePath)) {
+                unlink($oldImagePath);
+            }
         }
-
+    
         // Update the database record
         $query = "UPDATE blogs 
-                  SET title = '$title', author = '$author', content = '$content', image_url = " . 
-                  ($imagePath ? "'$imagePath'" : "NULL") . " 
-                  WHERE id = $id";
-
+                    SET title = '$title', author = '$author', content = '$content', image_url = " .
+                    ($imagePath ? "'$imagePath'" : "image_url") . " 
+                    WHERE id = $id";
+    
         if (!mysqli_query($con, $query)) {
             throw new Exception("Failed to update blog: " . mysqli_error($con));
         }
-
-        // Return success response
+    
         echo json_encode(['message' => 'Blog updated successfully']);
-    break;
+        break;        
 
     case 'DELETE':
         if ($id) {
@@ -174,64 +184,5 @@ switch ($method) {
     default:
         echo json_encode(['error' => 'Method not allowed']);
         break;
-}
-function parsePutData() {
-    $rawData = file_get_contents("php://input");
-    error_log("Raw PUT data: " . $rawData);  // Log the raw data to check what is coming through
-
-    // Process boundary and multipart data as usual
-    $boundary = substr($rawData, 0, strpos($rawData, "\r\n"));
-    
-    $data = [];
-    $files = [];
-    
-    // Split the raw data into parts
-    $parts = array_slice(explode($boundary, $rawData), 1);
-    
-    foreach ($parts as $part) {
-        // Check if this is the last part
-        if ($part == "--\r\n") break;
-        
-        // Separate headers and content
-        $part = ltrim($part, "\r\n");
-        list($rawHeaders, $body) = explode("\r\n\r\n", $part, 2);
-        
-        // Parse headers
-        $headers = [];
-        foreach (explode("\r\n", $rawHeaders) as $header) {
-            list($name, $value) = explode(":", $header, 2);
-            $headers[strtolower(trim($name))] = trim($value);
-        }
-        
-        // Check if it's a file field or regular data
-        if (isset($headers['content-disposition'])) {
-            preg_match('/^form-data; *name="([^"]+)"(; *filename="([^"]+)")?/', $headers['content-disposition'], $matches);
-            $fieldName = $matches[1];
-            $fileName = isset($matches[3]) ? $matches[3] : null;
-            
-            if ($fileName) {
-                // File field
-                $tmpName = tempnam(sys_get_temp_dir(), 'upload_');
-                file_put_contents($tmpName, $body);
-                $files[$fieldName] = [
-                    'name' => $fileName,
-                    'tmp_name' => $tmpName,
-                    'size' => strlen($body),
-                    'type' => $headers['content-type'],
-                    'error' => 0
-                ];
-            } else {
-                // Regular form data
-                $data[$fieldName] = rtrim($body, "\r\n");
-            }
-        }
     }
-    
-    // Log the received data and files for debugging
-    error_log("Parsed Data: " . print_r($data, true));
-    error_log("Parsed Files: " . print_r($files, true));
-    
-    // Merge the files and data into one array
-    return array_merge($data, $files);
-}
 ?>

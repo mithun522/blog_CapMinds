@@ -77,7 +77,7 @@ const AddBlogPage = () => {
   return (
     <div className="container mx-auto px-6 py-8">
       <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Add New Blog</h1>
-      <div className="max-w-xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+      <div className="max-w-full mx-auto bg-white p-8 rounded-lg shadow-lg">
         <form onSubmit={handleSubmit}>
           <InputField
             id="title"
